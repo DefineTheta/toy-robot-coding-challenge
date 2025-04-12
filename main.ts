@@ -4,10 +4,25 @@ if (import.meta.main) {
   const input = await Deno.readTextFile(filePath);
   const lines = input.split(/\r?\n/);
 
-  let dir = "";
+  type direction = "NORTH" | "EAST" | "SOUTH" | "WEST";
+  let dir: direction = "NORTH";
   let x = 0;
   let y = 0;
   let isRobotPlaced = false;
+
+  const leftTurn: Record<direction, direction> = {
+    NORTH: "WEST",
+    EAST: "NORTH",
+    SOUTH: "EAST",
+    WEST: "SOUTH",
+  };
+
+  const rightTurn: Record<direction, direction> = {
+    NORTH: "EAST",
+    EAST: "SOUTH",
+    SOUTH: "WEST",
+    WEST: "NORTH",
+  };
 
   for (let i = 0; i < lines.length; i++) {
     const commands = lines[i].split(" ");
@@ -20,15 +35,13 @@ if (import.meta.main) {
 
         x = Number(args[0]);
         y = Number(args[1]);
-        dir = args[3];
+        dir = args[3] as direction;
         isRobotPlaced = true;
 
         break;
       }
       case "MOVE": {
-        if (!isRobotPlaced) {
-          break;
-        }
+        if (!isRobotPlaced) break;
 
         if (dir === "NORTH" && y + 1 < 5) {
           y += 1;
@@ -40,6 +53,18 @@ if (import.meta.main) {
           x -= 1;
         }
 
+        break;
+      }
+      case "LEFT": {
+        if (!isRobotPlaced) break;
+
+        dir = leftTurn[dir];
+        break;
+      }
+      case "RIGHT": {
+        if (!isRobotPlaced) break;
+
+        dir = rightTurn[dir];
         break;
       }
       default: {

@@ -1,0 +1,12 @@
+// Learn more at https://docs.deno.com/runtime/manual/examples/module_metadata#concepts
+if (import.meta.main) {
+  const filePath = Deno.args[0];
+  const input = await Deno.readTextFile(filePath);
+  const lines = input.split(/\r?\n/);
+
+  console.log(lines);
+
+  for (const line in lines) {
+    console.log(line);
+  }
+}

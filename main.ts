@@ -33,9 +33,14 @@ if (import.meta.main) {
       case "PLACE": {
         const args = commands[1].split(",");
 
-        x = Number(args[0]);
-        y = Number(args[1]);
-        dir = args[3] as direction;
+        const tmpX = Number(args[0]);
+        const tmpY = Number(args[1]);
+
+        if (tmpX < 0 || tmpX > 4 || tmpY < 0 || tmpY > 4) break;
+
+        x = tmpX;
+        y = tmpY;
+        dir = args[2] as direction;
         isRobotPlaced = true;
 
         break;

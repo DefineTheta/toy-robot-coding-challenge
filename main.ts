@@ -14,7 +14,7 @@ const rightTurn: Record<Direction, Direction> = {
   WEST: "NORTH",
 };
 
-class Robot {
+export class Robot {
   dir: Direction;
   x: number;
   y: number;

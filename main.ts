@@ -1,28 +1,81 @@
+type Direction = "NORTH" | "EAST" | "SOUTH" | "WEST";
+
+const leftTurn: Record<Direction, Direction> = {
+  NORTH: "WEST",
+  EAST: "NORTH",
+  SOUTH: "EAST",
+  WEST: "SOUTH",
+};
+
+const rightTurn: Record<Direction, Direction> = {
+  NORTH: "EAST",
+  EAST: "SOUTH",
+  SOUTH: "WEST",
+  WEST: "NORTH",
+};
+
+class Robot {
+  dir: Direction;
+  x: number;
+  y: number;
+  isPlaced: boolean;
+
+  constructor() {
+    this.dir = "NORTH";
+    this.x = 0;
+    this.y = 0;
+    this.isPlaced = false;
+  }
+
+  place(x: number, y: number, dir: Direction) {
+    if (x < 0 || x > 4 || y < 0 || y > 4) return;
+
+    this.x = x;
+    this.y = y;
+    this.dir = dir;
+    this.isPlaced = true;
+  }
+
+  move() {
+    if (!this.isPlaced) return;
+
+    if (this.dir === "NORTH" && this.y + 1 < 5) {
+      this.y += 1;
+    } else if (this.dir === "EAST" && this.x + 1 < 5) {
+      this.x += 1;
+    } else if (this.dir === "SOUTH" && this.y - 1 > -1) {
+      this.y -= 1;
+    } else if (this.dir === "WEST" && this.x - 1 > -1) {
+      this.x -= 1;
+    }
+  }
+
+  left() {
+    if (!this.isPlaced) return;
+
+    this.dir = leftTurn[this.dir];
+  }
+
+  right() {
+    if (!this.isPlaced) return;
+
+    this.dir = rightTurn[this.dir];
+  }
+
+  report() {
+    if (!this.isPlaced) return;
+
+    return `${this.x},${this.y},${this.dir}`;
+  }
+}
+
 // Learn more at https://docs.deno.com/runtime/manual/examples/module_metadata#concepts
 if (import.meta.main) {
   const filePath = Deno.args[0];
   const input = await Deno.readTextFile(filePath);
   const lines = input.split(/\r?\n/);
 
-  type direction = "NORTH" | "EAST" | "SOUTH" | "WEST";
-  let dir: direction = "NORTH";
-  let x = 0;
-  let y = 0;
-  let isRobotPlaced = false;
-
-  const leftTurn: Record<direction, direction> = {
-    NORTH: "WEST",
-    EAST: "NORTH",
-    SOUTH: "EAST",
-    WEST: "SOUTH",
-  };
-
-  const rightTurn: Record<direction, direction> = {
-    NORTH: "EAST",
-    EAST: "SOUTH",
-    SOUTH: "WEST",
-    WEST: "NORTH",
-  };
+  const robot = new Robot();
 
   for (let i = 0; i < lines.length; i++) {
     const commands = lines[i].split(" ");
@@ -33,50 +86,27 @@ if (import.meta.main) {
       case "PLACE": {
         const args = commands[1].split(",");
 
-        const tmpX = Number(args[0]);
-        const tmpY = Number(args[1]);
-
-        if (tmpX < 0 || tmpX > 4 || tmpY < 0 || tmpY > 4) break;
-
-        x = tmpX;
-        y = tmpY;
-        dir = args[2] as direction;
-        isRobotPlaced = true;
-
+        robot.place(Number(args[0]), Number(args[1]), args[2] as Direction);
         break;
       }
       case "MOVE": {
-        if (!isRobotPlaced) break;
-
-        if (dir === "NORTH" && y + 1 < 5) {
-          y += 1;
-        } else if (dir === "EAST" && x + 1 < 5) {
-          x += 1;
-        } else if (dir === "SOUTH" && y - 1 > -1) {
-          y -= 1;
-        } else if (dir === "WEST" && x - 1 > -1) {
-          x -= 1;
-        }
-
+        robot.move();
         break;
       }
       case "LEFT": {
-        if (!isRobotPlaced) break;
-
-        dir = leftTurn[dir];
+        robot.left();
         break;
       }
       case "RIGHT": {
-        if (!isRobotPlaced) break;
-
-        dir = rightTurn[dir];
+        robot.right();
         break;
       }
       case "REPORT": {
-        if (!isRobotPlaced) break;
+        const pos = robot.report();
 
-        console.log(`${x},${y},${dir}`);
-
+        if (pos) {
+          console.log(pos);
+        }
         break;
       }
       default: {

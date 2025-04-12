@@ -67,6 +67,13 @@ if (import.meta.main) {
         dir = rightTurn[dir];
         break;
       }
+      case "REPORT": {
+        if (!isRobotPlaced) break;
+
+        console.log(`${x},${y},${dir}`);
+
+        break;
+      }
       default: {
         break;
       }
